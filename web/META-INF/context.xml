@@ -1,2 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/SWP391GROUP5"/>
+<Context path="/SWP391GROUP5">
+    <!-- Define a MySQL database connection pool -->
+    <Resource 
+        name="jdbc/swp391DB" 
+        auth="Container" 
+        type="javax.sql.DataSource"
+        maxTotal="100" 
+        maxIdle="30" 
+        maxWaitMillis="10000"
+        username="root" 
+        password="" 
+        driverClassName="com.mysql.cj.jdbc.Driver"
+        url="jdbc:mysql://localhost:3306/swp391?useSSL=false&amp;allowPublicKeyRetrieval=true&amp;serverTimezone=UTC"
+    />
+</Context>
