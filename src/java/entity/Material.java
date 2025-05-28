@@ -8,11 +8,9 @@ public class Material {
     private double price;
     private String category;
 
-    // Default constructor
     public Material() {
     }
 
-    // Parameterized constructor
     public Material(int id, String name, String code, String unit, double price, String category) {
         this.id = id;
         this.name = name;
@@ -23,11 +21,9 @@ public class Material {
     }
 
     // Getters and Setters
-
     public int getId() {
         return id;
     }
-
     public void setId(int id) {
         this.id = id;
     }
@@ -35,7 +31,6 @@ public class Material {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -43,7 +38,6 @@ public class Material {
     public String getCode() {
         return code;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
@@ -51,7 +45,6 @@ public class Material {
     public String getUnit() {
         return unit;
     }
-
     public void setUnit(String unit) {
         this.unit = unit;
     }
@@ -59,7 +52,6 @@ public class Material {
     public double getPrice() {
         return price;
     }
-
     public void setPrice(double price) {
         this.price = price;
     }
@@ -67,7 +59,6 @@ public class Material {
     public String getCategory() {
         return category;
     }
-
     public void setCategory(String category) {
         this.category = category;
     }
