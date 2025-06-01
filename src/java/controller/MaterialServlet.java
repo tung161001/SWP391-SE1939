@@ -2,56 +2,43 @@ package controller;
 
 import dao.MaterialDAO;
 import entity.Material;
-import utils.DBUtil;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Connection;
 import java.util.List;
 
-@WebServlet(name = "MaterialServlet", urlPatterns = {"/MaterialServlet"})
+@WebServlet("/materials")
 public class MaterialServlet extends HttpServlet {
+
+    private MaterialDAO materialDAO;
+
+    @Override
+    public void init() {
+        materialDAO = new MaterialDAO();
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        try (Connection conn = DBUtil.getConnection()) {
-            MaterialDAO dao = new MaterialDAO(conn);
-            List<Material> list = dao.getAllMaterials();
-            request.setAttribute("materials", list);
-            request.getRequestDispatcher("materials.jsp").forward(request, response);
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
+            throws ServletException, IOException {
+        List<Material> materials = materialDAO.getAll();
+        request.setAttribute("materials", materials);
+        request.getRequestDispatcher("jsp/createMaterial.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        String action = request.getParameter("action");
-        try (Connection conn = DBUtil.getConnection()) {
-            MaterialDAO dao = new MaterialDAO(conn);
+            throws ServletException, IOException {
+        String name = request.getParameter("name");
+        String code = request.getParameter("code");
+        String unit = request.getParameter("unit");
+        double price = Double.parseDouble(request.getParameter("price"));
 
-            if ("create".equals(action)) {
-                Material m = new Material();
-                m.setName(request.getParameter("name"));
-                m.setCode(request.getParameter("code"));
-                m.setUnit(request.getParameter("unit"));
-                m.setPrice(Double.parseDouble(request.getParameter("price")));
-                m.setCategory(request.getParameter("category"));
+        Material material = new Material(0, name, code, unit, price);
+        materialDAO.insert(material);
 
-                dao.create(m);
-                response.sendRedirect("MaterialServlet");
-            } else if ("filter".equals(action)) {
-                String category = request.getParameter("category");
-                List<Material> list = dao.filterByCategory(category);
-                request.setAttribute("materials", list);
-                request.getRequestDispatcher("materials.jsp").forward(request, response);
-            }
-        } catch (Exception e) {
-            throw new ServletException(e);
-        }
+        response.sendRedirect("materials"); // Refresh danh sách sau khi thêm
     }
 }
