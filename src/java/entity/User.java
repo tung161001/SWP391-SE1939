@@ -2,18 +2,19 @@ package entity;
 
 public class User {
     private int id;
-    private String username;
     private String fullName;
     private String email;
     private Role role;
     private boolean active;
+    private String address;
+
     
     public User() {
     }
     
-    public User(int id, String username, String fullName, String email, Role role, boolean active) {
+    public User(int id, String address, String fullName, String email, Role role, boolean active) {
         this.id = id;
-        this.username = username;
+        this.address = address;
         this.fullName = fullName;
         this.email = email;
         this.role = role;
@@ -28,12 +29,12 @@ public class User {
         this.id = id;
     }
     
-    public String getUsername() {
-        return username;
+    public String getAddress() {
+        return address;
     }
     
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAddress(String address) {
+        this.address = address;
     }
     
     public String getFullName() {

@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 
 public class UserDAO {
 
+    private static final Logger LOGGER = Logger.getLogger(UserDAO.class.getName());
+
     /**
      * Get all users from the database
      *
@@ -35,7 +37,7 @@ public class UserDAO {
                 while (rs.next()) {
                     User user = new User();
                     user.setId(rs.getInt("UserID"));
-                    user.setUsername(rs.getString("Email"));
+                    user.setAddress(rs.getString("Address"));
                     user.setFullName(rs.getString("FullName"));
                     user.setEmail(rs.getString("Email"));
                     user.setRole(new Role(rs.getInt("RoleID"), rs.getString("RoleName")));
@@ -44,7 +46,7 @@ public class UserDAO {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, "Error fetching users", ex);
+            LOGGER.log(Level.SEVERE, "Error fetching users", ex);
         } finally {
             connection.closeResources(conn, ps, rs);
         }
@@ -76,7 +78,7 @@ public class UserDAO {
                 if (rs.next()) {
                     user = new User();
                     user.setId(rs.getInt("UserID"));
-                    user.setUsername(rs.getString("Email"));
+                    user.setAddress(rs.getString("Address"));
                     user.setFullName(rs.getString("FullName"));
                     user.setEmail(rs.getString("Email"));
                     user.setRole(new Role(rs.getInt("RoleID"), rs.getString("RoleName")));
@@ -87,7 +89,7 @@ public class UserDAO {
                 return null;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, "Error fetching user by ID", ex);
+            LOGGER.log(Level.SEVERE, "Error fetching user by ID", ex);
         } finally {
             connection.closeResources(conn, ps, rs);
         }
@@ -115,7 +117,7 @@ public class UserDAO {
                 if (rs.next()) {
                     user = new User();
                     user.setId(rs.getInt("UserID"));
-                    user.setUsername(rs.getString("Email"));
+                    user.setAddress(rs.getString("Address"));
                     user.setFullName(rs.getString("FullName"));
                     user.setEmail(rs.getString("Email"));
                     user.setRole(new Role(rs.getInt("RoleID"), rs.getString("RoleName")));
@@ -126,11 +128,106 @@ public class UserDAO {
                 return null;
             }
         } catch (SQLException ex) {
-            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, "Error fetching user by ID", ex);
+            LOGGER.log(Level.SEVERE, "Error fetching user by ID", ex);
         } finally {
             connection.closeResources(conn, ps, rs);
         }
 
         return user;
+    }
+
+    /**
+     * Delete a user from the database
+     * @param userId ID of the user to delete
+     * @return true if successful, false otherwise
+     */
+    public boolean deleteUser(int userId) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = connection.getConnection();
+            if (conn != null) {
+                String sql = "DELETE FROM User WHERE UserID = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setInt(1, userId);
+                
+                int rowsAffected = ps.executeUpdate();
+                return rowsAffected > 0;
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error deleting user with ID: " + userId, ex);
+        } finally {
+            connection.closeResources(conn, ps, null);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Update a user in the database
+     * @param user The user object with updated information
+     * @return true if successful, false otherwise
+     */
+    public boolean updateUser(User user) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = connection.getConnection();
+            if (conn != null) {
+                String sql = "UPDATE User SET FullName = ?, Email = ?, Address = ?, RoleID = ?, Status = ? WHERE UserID = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, user.getFullName());
+                ps.setString(2, user.getEmail());
+                ps.setString(3, user.getAddress());
+                ps.setInt(4, user.getRole().getId());
+                ps.setBoolean(5, user.isActive());
+                ps.setInt(6, user.getId());
+                
+                int rowsAffected = ps.executeUpdate();
+                return rowsAffected > 0;
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error updating user with ID: " + user.getId(), ex);
+        } finally {
+            connection.closeResources(conn, ps, null);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Insert a new user into the database
+     * @param user The user object to insert
+     * @param password The password for the new user
+     * @return true if successful, false otherwise
+     */
+    public boolean insertUser(User user, String password) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        
+        try {
+            conn = connection.getConnection();
+            if (conn != null) {
+                String sql = "INSERT INTO User (FullName, Email, Address, RoleID, Status, Password) VALUES (?, ?, ?, ?, ?, ?)";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, user.getFullName());
+                ps.setString(2, user.getEmail());
+                ps.setString(3, user.getAddress());
+                ps.setInt(4, user.getRole().getId());
+                ps.setBoolean(5, user.isActive());
+                ps.setString(6, password);
+                
+                int rowsAffected = ps.executeUpdate();
+                return rowsAffected > 0;
+            }
+        } catch (SQLException ex) {
+            LOGGER.log(Level.SEVERE, "Error inserting new user", ex);
+        } finally {
+            connection.closeResources(conn, ps, null);
+        }
+        
+        return false;
     }
 }

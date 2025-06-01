@@ -30,14 +30,14 @@ public class RoleDAO {
         try {
             conn = connection.getConnection();
             if (conn != null) {
-                String sql = "SELECT * FROM role";
+                String sql = "SELECT * FROM Role";
                 ps = conn.prepareStatement(sql);
                 rs = ps.executeQuery();
                 
                 while (rs.next()) {
                     Role role = new Role();
-                    role.setId(rs.getInt("id"));
-                    role.setName(rs.getString("name"));
+                    role.setId(rs.getInt("RoleID"));
+                    role.setName(rs.getString("RoleName"));
                     roles.add(role);
                 }
             }
@@ -64,15 +64,15 @@ public class RoleDAO {
         try {
             conn = connection.getConnection();
             if (conn != null) {
-                String sql = "SELECT * FROM role WHERE id = ?";
+                String sql = "SELECT * FROM Role WHERE RoleID = ?";
                 ps = conn.prepareStatement(sql);
                 ps.setInt(1, id);
                 rs = ps.executeQuery();
                 
                 if (rs.next()) {
                     role = new Role();
-                    role.setId(rs.getInt("id"));
-                    role.setName(rs.getString("name"));
+                    role.setId(rs.getInt("RoleID"));
+                    role.setName(rs.getString("RoleName"));
                 }
             }
         } catch (SQLException ex) {

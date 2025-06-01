@@ -122,9 +122,9 @@
                     </button>
                 </div>
                 <div>
-                    <button class="btn" style="background-color: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 4px;">
+                    <a href="AddUser" class="btn" style="background-color: #27ae60; color: white; border: none; padding: 8px 12px; border-radius: 4px; text-decoration: none;">
                         <i class="fas fa-plus"></i> Add New User
-                    </button>
+                    </a>
                 </div>
             </div>
 
@@ -132,9 +132,9 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Username</th>
-                        <th>Full Name</th>
                         <th>Email</th>
+                        <th>Full Name</th>
+                        <th>Address</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -144,9 +144,9 @@
                     <c:forEach items="${userList}" var="user">
                         <tr>
                             <td>${user.id}</td>
-                            <td>${user.username}</td>
-                            <td>${user.fullName}</td>
                             <td>${user.email}</td>
+                            <td>${user.fullName}</td>
+                            <td>${user.address}</td>
                             <td>${user.role.name}</td>
                             <td>
                                 <c:if test="${user.active}">
@@ -158,14 +158,34 @@
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="#" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
-                                    <a href="#" class="btn btn-delete"><i class="fas fa-trash"></i> Delete</a>
+                                    <a href="EditUser?userId=${user.id}" class="btn btn-edit"><i class="fas fa-edit"></i> Edit</a>
+                                    <form action="DeleteUser" method="POST" style="display:inline;">
+                                        <input type="hidden" name="userId" value="${user.id}" />
+                                        <button type="submit" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this user?')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>                                
                                 </div>
                             </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
+            
+            <!-- Display messages -->
+            <c:if test="${not empty sessionScope.message}">
+                <div class="alert alert-success" style="margin-top: 20px; padding: 10px; background-color: #dff0d8; color: #3c763d; border-radius: 4px;">
+                    ${sessionScope.message}
+                    <% session.removeAttribute("message"); %>
+                </div>
+            </c:if>
+            
+            <c:if test="${not empty sessionScope.error}">
+                <div class="alert alert-danger" style="margin-top: 20px; padding: 10px; background-color: #f2dede; color: #a94442; border-radius: 4px;">
+                    ${sessionScope.error}
+                    <% session.removeAttribute("error"); %>
+                </div>
+            </c:if>
         </div>
     </body>
 </html> 
