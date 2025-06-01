@@ -13,9 +13,10 @@ CREATE TABLE User (
     UserID INT AUTO_INCREMENT PRIMARY KEY,
     FullName VARCHAR(100),
     Email VARCHAR(100),
-    PasswordHash VARCHAR(255),
-    IsActive BOOLEAN DEFAULT TRUE,
+    Password VARCHAR(255),
+    Status BOOLEAN DEFAULT TRUE,
     RoleID INT,
+    Address VARCHAR(1000),
     FOREIGN KEY (RoleID) REFERENCES Role(RoleID)
 );
 
@@ -91,3 +92,9 @@ INSERT INTO Role (RoleName) VALUES ('Quản lý kho'), ('Nhân viên kho'), ('Gi
 
 -- Dữ liệu mẫu cho bảng RequestType
 INSERT INTO RequestType (TypeName) VALUES ('Yêu cầu xuất kho'), ('Đề nghị mua mới'), ('Đề nghị sửa chữa');
+
+
+
+
+
+

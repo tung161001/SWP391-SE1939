@@ -27,19 +27,19 @@ public class UserDAO {
         try {
             conn = connection.getConnection();
             if (conn != null) {
-                String sql = "select u.id,u.username,u.address,u.email,u.full_name,u.role_id,u.status,"
-                        + "r.name as role_name from user as u left join role as r on r.id = u.role_id ";
+                String sql = "select u.UserID,u.Address,u.Email,u.FullName,u.RoleID,u.Status,r.RoleName as RoleName "
+                        + "from User as u left join Role as r on r.RoleID = u.RoleID";
                 ps = conn.prepareStatement(sql);
                 rs = ps.executeQuery();
 
                 while (rs.next()) {
                     User user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setUsername(rs.getString("username"));
-                    user.setFullName(rs.getString("full_name"));
-                    user.setEmail(rs.getString("email"));
-                    user.setRole(new Role(rs.getInt("role_id"),rs.getString("role_name")));
-                    user.setActive(rs.getBoolean("status"));
+                    user.setId(rs.getInt("UserID"));
+                    user.setUsername(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setRole(new Role(rs.getInt("RoleID"), rs.getString("RoleName")));
+                    user.setActive(rs.getBoolean("Status"));
                     users.add(user);
                 }
             }
@@ -67,20 +67,59 @@ public class UserDAO {
         try {
             conn = connection.getConnection();
             if (conn != null) {
-                String sql = "select u.id,u.username,u.address,u.email,u.full_name,u.role_id,u.status,"
-                        + "r.name as role_name from user as u left join role as r on r.id = u.role_id WHERE u.id = ?";
+                String sql = "select u.UserID,u.Address,u.Email,u.FullName,u.RoleID,u.Status,r.RoleName as "
+                        + "RoleName from User as u left join Role as r on r.RoleID = u.RoleID where u.UserID = ?";
                 ps = conn.prepareStatement(sql);
                 ps.setInt(1, id);
                 rs = ps.executeQuery();
 
                 if (rs.next()) {
                     user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setUsername(rs.getString("username"));
-                    user.setFullName(rs.getString("full_name"));
-                    user.setEmail(rs.getString("email"));
-                    user.setRole(new Role(rs.getInt("role_id"),rs.getString("role_name")));
-                    user.setActive(rs.getBoolean("active"));
+                    user.setId(rs.getInt("UserID"));
+                    user.setUsername(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setRole(new Role(rs.getInt("RoleID"), rs.getString("RoleName")));
+                    user.setActive(rs.getBoolean("Status"));
+                }
+            } else {
+                // If connection fails, try to get from sample data
+                return null;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(UserDAO.class.getName()).log(Level.SEVERE, "Error fetching user by ID", ex);
+        } finally {
+            connection.closeResources(conn, ps, rs);
+        }
+
+        return user;
+    }
+
+    public User getUserByPasswordUsername(String username, String password) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        User user = null;
+
+        try {
+            conn = connection.getConnection();
+            if (conn != null) {
+                String sql = "select u.UserID,u.Address,u.Email,u.FullName,u.RoleID,u.Status,r.RoleName as "
+                        + "RoleName from User as u left join Role as r on r.RoleID = u.RoleID where u.Email = ? and u.Password = ?";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, username);
+                ps.setString(2, password);
+
+                rs = ps.executeQuery();
+
+                if (rs.next()) {
+                    user = new User();
+                    user.setId(rs.getInt("UserID"));
+                    user.setUsername(rs.getString("Email"));
+                    user.setFullName(rs.getString("FullName"));
+                    user.setEmail(rs.getString("Email"));
+                    user.setRole(new Role(rs.getInt("RoleID"), rs.getString("RoleName")));
+                    user.setActive(rs.getBoolean("Status"));
                 }
             } else {
                 // If connection fails, try to get from sample data

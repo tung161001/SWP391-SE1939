@@ -1,62 +1,52 @@
-
-
 package controller;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-import java.sql.*;
+import entity.User;
+import utils.cookieUtil;
+
+
+@WebServlet(urlPatterns = {"/login"})
 
 public class LoginServlet extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        // Forward to the JSP page
+        request.getRequestDispatcher("WEB-INF/views/login.jsp").forward(request, response);
+    }
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
+            throws ServletException, IOException {
 
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String remember = request.getParameter("rememberMe");
+        cookieUtil cookie = new cookieUtil();
 
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:8080//", "root", "password");
-
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM users WHERE email=? AND password=?");
-            ps.setString(1, email);
-            ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                HttpSession session = request.getSession();
-                session.setAttribute("user", email);
-
-                // Ghi nhớ đăng nhập bằng cookie
-                if ("on".equals(remember)) {
-                    Cookie c1 = new Cookie("email", email);
-                    Cookie c2 = new Cookie("password", password);
-                    c1.setMaxAge(60*60*24*7); // 7 ngày
-                    c2.setMaxAge(60*60*24*7);
-                    response.addCookie(c1);
-                    response.addCookie(c2);
-                }
-
-                response.sendRedirect("dashboard.jsp");
-            } else {
-                request.setAttribute("message", "Invalid email or password!");
-                RequestDispatcher rd = request.getRequestDispatcher("login.jsp");
-                rd.forward(request, response);
-            }
-
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("message", "Server error!");
-            request.getRequestDispatcher("login.jsp").forward(request, response);
+        if ("on".equals(remember)) {
+            Cookie c1 = new Cookie("email", email);
+            Cookie c2 = new Cookie("password", password);
+            c1.setMaxAge(60 * 60 * 24 * 7); // 7 ngày
+            c2.setMaxAge(60 * 60 * 24 * 7);
+            response.addCookie(c1);
+            response.addCookie(c2);
         }
+
+        User user = new UserDAO().getUserByPasswordUsername(email, password);
+        if(user != null){
+            cookie.setCookie(response, cookie.user, String.valueOf(user.getId()));
+            request.getRequestDispatcher("index.jsp").forward(request, response);
+            return;
+        }
+        request.getRequestDispatcher("WEB-INF/views/login.jsp").forward(request, response);
     }
 }

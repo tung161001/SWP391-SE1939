@@ -59,7 +59,7 @@
             </a>
         </li>
         <li class="sidebar-item">
-            <a href="#">
+            <a href="${pageContext.request.contextPath}/login">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Logout</span>
             </a>
