@@ -1,7 +1,6 @@
 package controller;
 
 import dao.SettingDAO;
-import entity.Setting;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,6 +25,6 @@ public class SettingServlet extends HttpServlet {
             throws ServletException, IOException {
         List<Setting> settings = settingDAO.getAll();
         request.setAttribute("settings", settings);
-        request.getRequestDispatcher("jsp/settingList.jsp").forward(request, response);
+        request.getRequestDispatcher("/settingList.jsp").forward(request, response);
     }
 }
