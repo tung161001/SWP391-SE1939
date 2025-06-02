@@ -4,13 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Material;
-import util.DBConnection;
 
 public class MaterialDAO {
 
     public void insert(Material material) {
         String sql = "INSERT INTO materials (name, code, unit, price) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, material.getName());
             ps.setString(2, material.getCode());
@@ -25,7 +24,7 @@ public class MaterialDAO {
     public List<Material> getAll() {
         List<Material> list = new ArrayList<>();
         String sql = "SELECT * FROM materials";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connection.getConnection();
              Statement st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
