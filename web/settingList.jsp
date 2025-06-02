@@ -1,69 +1,123 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>System Settings</title>
+    <meta charset="UTF-8">
+    <title>Danh sách Setting</title>
+    <!-- Font Awesome (giống index.jsp) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Dùng cùng file CSS chính như index.jsp -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style/global.css">
     <style>
-        * { box-sizing: border-box; font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        body { min-height: 100vh; background: #f0f2f5; }
-
-        /* Main content */
-        .main {
-            padding: 30px;
-            max-width: 800px;
-            margin: auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        .main h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
             color: #333;
-            text-align: center;
         }
-
-        table {
+        
+        .content-wrapper {
+            padding: 20px;
+            margin-left: 250px; /* Chừa khoảng cho sidebar */
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .box {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .table-container {
+            margin-top: 20px;
+        }
+        
+        .table-container table {
             width: 100%;
-            background: white;
             border-collapse: collapse;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: white;
         }
-
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f7f7f7;
+        
+        .table-container th, 
+        .table-container td {
+            border: 1px solid #ddd;
+            padding: 12px;
             text-align: left;
         }
-
-        tr:hover {
-            background-color: #f1f1f1;
+        
+        .table-container th {
+            background-color: #f2f2f2;
+            color: #2c3e50;
+        }
+        
+        .table-container tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .action-button {
+            background-color: #2c3e50;
+            color: white;
+            padding: 6px 12px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-button:hover {
+            background-color: #34495e;
         }
     </style>
 </head>
 <body>
-
-    <!-- Main content -->
-    <div class="main">
-        <h1>System Settings</h1>
-
-        <table>
-            <tr>
-                <th>ID</th>
-                <th>Key</th>
-                <th>Value</th>
-            </tr>
-            <c:forEach var="s" items="${settings}">
-                <tr>
-                    <td>${s.id}</td>
-                    <td>${s.key}</td>
-                    <td>${s.value}</td>
-                </tr>
-            </c:forEach>
-        </table>
+    <!-- Include sidebar giống index.jsp -->
+    <jsp:include page="/components/sidebar.jsp" />
+    
+    <div class="content-wrapper">
+        <h1>Danh sách Setting</h1>
+        
+        <div class="box">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Key</th>
+                            <th>Value</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="s" items="${settings}">
+                            <tr>
+                                <td>${s.id}</td>
+                                <td>${s.key}</td>
+                                <td>${s.value}</td>
+                                <td>
+                                    <a href="${pageContext.request.contextPath}/settings/edit?id=${s.id}" class="action-button">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/settings/delete?id=${s.id}" class="action-button" style="background-color: #e74c3c;">
+                                        <i class="fas fa-trash-alt"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-<jsp:include page="/components/sidebar.jsp" />  
 </body>
 </html>
