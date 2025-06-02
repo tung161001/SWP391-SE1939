@@ -53,7 +53,7 @@
         </li>
         <li class="sidebar-title">System</li>
         <li class="sidebar-item">
-            <a href="#">
+            <a href="${pageContext.request.contextPath}/settings">
                 <i class="fas fa-cog"></i>
                 <span>Settings</span>
             </a>
