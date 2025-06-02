@@ -4,14 +4,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import entity.Setting;
-import util.DBConnection;
 
 public class SettingDAO {
 
     public List<Setting> getAll() {
         List<Setting> list = new ArrayList<>();
         String sql = "SELECT * FROM settings";
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connection.getConnection();
              Statement  st = conn.createStatement();
              ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
