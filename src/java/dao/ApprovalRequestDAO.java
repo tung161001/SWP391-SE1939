@@ -1,9 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package dao;
 
+import com.sun.jdi.connect.spi.Connection;
+import jakarta.security.auth.message.callback.PrivateKeyCallback.Request;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,34 +11,41 @@ import java.util.List;
  * @author Doan PC
  */
 public class ApprovalRequestDAO {
-    private final String JDBC_URL = "jdbc:mysql://localhost:3306/materials_db";
-    private final String JDBC_USER = "root";
-    private final String JDBC_PASS = "your_password";
+    private final String jdbcURL = "jdbc:mysql://localhost:3306/approval_system";
+    private final String jdbcUsername = "root";
+    private final String jdbcPassword = "123456";
 
-    public List<ApprovalRequest> getAllRequests() {
-        List<ApprovalRequest> list = new ArrayList<>();
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASS);
+    private Connection connect() throws SQLException {
+        return DBConnection.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+    }
 
-            String sql = "SELECT * FROM approval_requests";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(sql);
+    public List<Request> getAllRequests() {
+        List<Request> list = new ArrayList<>();
+        String sql = "SELECT * FROM requests";
 
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                ApprovalRequest req = new ApprovalRequest(
+                list.add(new Request(
                     rs.getInt("id"),
                     rs.getString("request_type"),
                     rs.getString("approval_status"),
                     rs.getString("comments")
-                );
-                list.add(req);
+                ) {});
             }
-
-            conn.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public void approveRequest(int id) {
+        String sql = "UPDATE requests SET approval_status = 'Approved' WHERE id = ?";
+        try (Connection conn = connect(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
