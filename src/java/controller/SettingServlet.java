@@ -12,18 +12,11 @@ import java.util.List;
 
 @WebServlet("/settings")
 public class SettingServlet extends HttpServlet {
-
-    private SettingDAO settingDAO;
-
-    @Override
-    public void init() {
-        settingDAO = new SettingDAO();
-    }
-
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Setting> settings = settingDAO.getAll();
+        SettingDAO dao = new SettingDAO();
+        List<Setting> settings = dao.getAll();
         request.setAttribute("settings", settings);
         request.getRequestDispatcher("/settingList.jsp").forward(request, response);
     }
