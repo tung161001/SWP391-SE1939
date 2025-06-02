@@ -1,83 +1,62 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
- */
+package dao;
 
-package controller;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import entity.ApprovalRequest;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
- * @author Doan PC
+ * DAO để truy vấn bảng approval_requests từ MySQL
  */
-@WebServlet(name="ApprovalRequestServlet", urlPatterns={"/ApprovalRequestServlet"})
-public class ApprovalRequestServlet extends HttpServlet {
-   
-    /** 
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
+public class ApprovalRequestDAO {
+    // URL JDBC (có thể thêm ?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8 nếu cần)
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/materials_db"
+                                          + "?useSSL=false&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
+    private static final String JDBC_USER = "root";
+    private static final String JDBC_PASS = "123456";
+
+    /**
+     * Lấy toàn bộ danh sách ApprovalRequest từ DB
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet ApprovalRequestServlet</title>");  
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet ApprovalRequestServlet at " + request.getContextPath () + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
+    public List<ApprovalRequest> getAllRequests() {
+        List<ApprovalRequest> list = new ArrayList<>();
+        // Câu lệnh SQL rõ ràng chỉ lấy đúng các cột cần thiết
+        String sql = "SELECT id, request_type, approval_status, comments FROM approval_requests";
+
+        // 1. Nạp driver MySQL
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            ex.printStackTrace();
+            // Nếu không nạp được driver thì trả về list rỗng
+            return list;
         }
-    } 
 
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /** 
-     * Handles the HTTP <code>GET</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+        // 2. Mở kết nối và thực thi truy vấn trong try-with-resources
+        try (
+            Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASS);
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+        ) {
+            // Duyệt ResultSet và thêm vào list
+            while (rs.next()) {
+                ApprovalRequest req = new ApprovalRequest(
+                    rs.getInt("id"),
+                    rs.getString("request_type"),
+                    rs.getString("approval_status"),
+                    rs.getString("comments")
+                );
+                list.add(req);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            // Nếu có lỗi SQL thì in stack trace và trả về list hiện tại (có thể đang rỗng)
+        }
 
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
+        return list;
     }
-
-    /** 
-     * Returns a short description of the servlet.
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
 }
